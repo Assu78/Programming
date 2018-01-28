@@ -1,0 +1,51 @@
+*{
+	border: 1px solid white !important;
+
+}
+*{
+	-webkit-box-sizing: border-box;
+	-moz-box-sizing: border-box;
+	-ms-box-sizing: border-box;
+	box-sizing: border-box;
+}
+
+.td-main-content{
+	margin-right: 50px;
+	margin-left: 50px;
+	padding-left: 50px;
+}
+
+.td-post-header{
+	width: 100%;
+	margin-bottom: 24px;
+	
+}
+.td-author-name{
+	display: flex;
+}
+.Image{
+	width: 50%;
+}
+
+.author-name{
+	font-weight: 900;
+	margin-right: 3px; 
+}
+.td-author-by{
+	margin-right: 2px;
+}
+.td-author-line{
+	margin-right: 2px;
+}
+.td-media-info{
+	display: flex;
+}
+
+p{
+	font-size: 15px;
+	margin-bottom: 26px;
+}
+.Image-of-Virak{
+	margin-top: 300px;
+	margin-bottom: 200px;
+}

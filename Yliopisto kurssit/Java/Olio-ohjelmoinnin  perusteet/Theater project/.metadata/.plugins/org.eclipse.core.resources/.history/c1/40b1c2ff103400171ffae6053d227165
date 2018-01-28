@@ -1,0 +1,232 @@
+/*
+ *Tämä on luokka, jossa on main-metoodi 
+ *alusta tulee menu, joka kysyy, mitä käyttäjä halua tehdä (katsoa elokuvien listaa, tehdä varaus, lopeta) 
+ * */
+
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.util.ArrayList;
+import java.util.Scanner;
+
+public class LipunVaraus{
+	 
+	public enum Paivat{
+		Maanantai, Tiistai, Keskiviikko, Torstai, Perjantai, Lauantai, Sunnuntai
+	}
+	static Scanner scan = new Scanner(System.in);
+
+	public static void main(String[] args) throws FileNotFoundException{ 
+		System.out.println("Tervetuloa meidän varaus systeemiin!");
+		// Menu, joka kysyy, mitä käyttääjä halua
+		
+		while(true){
+			scan = new Scanner(System.in);	
+			System.out.println("\nJos haluat katsoa elokuvalistan, press 1");
+	 		System.out.println("Jos haluat tehdä varaus, press 2");
+	 		System.out.println("Jos haluat lopeta, press 3");
+	 		try{
+	 			int choise = scan.nextInt(); 
+	 			if (choise == 1){
+		 		 	ArrayList<Elokuva> elokuvat = new ArrayList<>();
+		 		 	elokuvat = makeElokuva(); // creates the list of the movies
+		 			int index = 1; // joten lista alkaa 1sta
+		 			for (int i = 0; i < elokuvat.size(); i++){
+		 		 	   System.out.println(index + ": " + elokuvat.get(i).annaElokuvanAika() + " '" + elokuvat.get(i).annaElokuvanNimi() + "' ") ;
+		 		 	   index ++; 	   
+		 			 }
+		 			System.out.println("");
+		 			continue; 
+		 		}else if (choise == 2){
+		 			String paiva = " ";	
+		 		 	paiva = paivaValitus(); //Valitaan päivä, milloin katsotaan elokuvaa
+		 		 	ArrayList<Elokuva> elokuvat = new ArrayList<>();
+		 			elokuvat = makeElokuva(); // creates the list of the movies
+		 			Elokuva chosenElokuva = valitseElokuva(elokuvat); // valitse elokuvan listasta
+		 			ArrayList<Integer> istumaPaikka = new ArrayList<>();
+		 			istumaPaikka = valitsePaikan(); 
+		 			Asiakas asiakas = uusiAsiakas(chosenElokuva);//luo uusi asiakas ja kirjoita sen tietoja failiin
+		 			Lippu lippu = new Lippu(asiakas.annaNimi(), asiakas.annaPuhelinnumero(), asiakas.annaSahkoposti(), chosenElokuva, istumaPaikka, paiva);
+		 		}else if(choise == 3){
+		 			System.out.println("You've decided to cancel. Bye!");
+					System.exit(1);
+					continue;
+		 		}
+		 	}catch(Exception e){
+		 			System.out.println("MISTAKE");
+		 			continue;
+	 		}
+		}
+	}
+
+	 
+	/*Tämä metoodi syö asiakkaan tietoja ja luo uuden asiakkaan
+	 * @param ArrayList<String> movie eli kaikkien elokuvien lista
+	 * */
+	 
+	 public static Asiakas uusiAsiakas(Elokuva movie){		
+		 		 scan = new Scanner(System.in);	
+		 		String asiakkaanNimi = " "; 
+		 		String asiakkaanNumero = " "; 
+		 		String asiakkaanPosti = " ";  
+		 		System.out.println("\nNyt tarvitetaan tietoja. \nAnna sun Sukunimi ja Etunimi: ");
+		 		asiakkaanNimi = scan.nextLine();
+		 		System.out.println(asiakkaanNimi + ", kiitos. Nyt kitjoita sun puhelinnumerosi:");
+		 		asiakkaanNumero = scan.nextLine();
+		 	   	System.out.println("Kiitos! Ja myös sähköpostisi:");
+		 	   	//the e-mail has to contain @
+		 	   	asiakkaanPosti = null;  
+		 	   	while (true){ 
+		 		   asiakkaanPosti = scan.nextLine();
+		 		   if (asiakkaanPosti.contains("@")){
+		 			   break;
+		 		   }else{
+	     			   System.out.println("Väärin formatti. Kirjoita sen taas (Yritä käyttää @)");
+		 			   continue; 
+		 		   }
+		 	   }
+		 		
+		 	   System.out.print(asiakkaanNimi + ", ");
+		 	   Asiakas asiakas = new Asiakas(asiakkaanNimi, asiakkaanNumero, asiakkaanPosti, movie); //luo uusi asiakas
+		 	   System.out.println("Kiitos varauksestasi!");
+		 	   return asiakas;
+	 }
+	 
+	/*
+	 * @returns ArrayList<Elokuva>  the list of the movies
+	 * metoodi avaa elokuvien lista ja tekee niistä arrayList.
+	 * */ 
+	 
+	 public static ArrayList<Elokuva> makeElokuva() throws FileNotFoundException {
+		 ArrayList<Elokuva> elokuvat = new ArrayList<Elokuva>();    
+		
+		Scanner scanFile = new Scanner(new File("elokuvat.txt"));
+		  if (scanFile == null){
+			  throw new FileNotFoundException ("Tiedosto ei löydy");
+		  } else {
+			 while(scanFile.hasNextLine()){
+			        String line = scanFile.nextLine();
+			        for (int i = 2; i < line.length(); i++){
+			            if (line.substring(i-2, i).equals("00")){
+			        		String elokuvanNimi = line.substring(0, i);
+			        		String elokuvanAika = line.substring(i+2, line.length()); 
+			        		Elokuva leffa = new Elokuva(elokuvanAika, elokuvanNimi);
+			        		elokuvat.add(leffa);
+			        	}
+			        }
+			 }   
+		  }
+		  scanFile.close();
+		   return elokuvat;
+	 }
+
+	 /*@returns String paiva jolloin asiakas halua katsoa elokuvaa when the user chooses the day */
+	 
+	 public static String paivaValitus(){ 
+		 
+			 System.out.println("Hei! Milloin haluat katsoa elokuvaa? \n \nValitse päivä kirjoitamalla sen nimi tai index. Type 0 if you want to quit");
+			 Paivat viikonpaiva = null; 
+			 while(true){
+			scan = new Scanner(System.in);	
+
+			 int i = 1;
+			 for (Paivat paiva: Paivat.values()){
+				 System.out.print(i + " ");
+				 System.out.println(paiva);
+				 i++;
+			 }
+			 try{
+			int s = scan.nextInt();  
+				 if(s == 1){
+			 		viikonpaiva = Paivat.Maanantai;
+				}if(s == 2){
+		 			viikonpaiva = Paivat.Tiistai;
+				}if(s == 3){
+					viikonpaiva = Paivat.Keskiviikko;
+				}if(s == 4){
+					 viikonpaiva = Paivat.Torstai; 
+				}if(s == 5){
+					 viikonpaiva = Paivat.Perjantai;
+				}if(s == 6){
+					viikonpaiva = Paivat.Lauantai;
+				}if(s == 7){
+					 viikonpaiva = Paivat.Sunnuntai; 
+				}if(s == 0){
+					 System.out.println("You've decided to cancel. Bye!");
+					 System.exit(1);
+				}
+			 } catch (Exception e){
+						System.out.println("Oops,this is wääreen. Try again: ");
+						continue; 
+						
+				}
+				System.out.println("You want to watch a movie on " + viikonpaiva + ". Nyt valitse elouva: \n");
+				return String.valueOf(viikonpaiva);	
+		  } 
+	}
+    		 	
+	 
+	 /* @param ArrayList<Elokuva>elokuvat elokuvien lista
+	  * @return chosenMovie joka asiakais valitse 
+	  * */
+	
+	 public static Elokuva valitseElokuva(ArrayList<Elokuva>elokuvat){ 
+		 Elokuva chosenMovie = null;
+		 for (int i = 0; i < elokuvat.size(); i++){
+		 	   System.out.println(i+1 + ": " + elokuvat.get(i).annaElokuvanAika() + " '" + elokuvat.get(i).annaElokuvanNimi() + "' ") ;
+		 	   }
+		 try{
+		
+			 System.out.println("\nValitse elokuva indeksillä.Valitse 0 jos haluat lopettaa");
+			 //choosing a movie
+			 int movieNumber = scan.nextInt(); 
+			 if(movieNumber == 0){
+				 System.out.println("You've decided to cancel. Bye!");
+				 System.exit(1);
+				}
+			 else{
+				 movieNumber-=1; 
+			 }
+			 		
+			 chosenMovie = elokuvat.get(movieNumber); 		
+			 System.out.println("you have chosen The movie: '" + elokuvat.get(movieNumber).annaElokuvanNimi() + "' at " + elokuvat.get(movieNumber).annaElokuvanAika()); 
+		 	  } catch (Exception e){
+		 	     System.out.println("virhe: " + e.getMessage());
+		 	  		 	      	   
+		 	  }	 
+
+		 return chosenMovie; 
+		 }
+	 
+	 /*
+	  * Valitse paikan 
+	  * */
+	 public static ArrayList<Integer> valitsePaikan(){ 		 	  		 	   
+			ArrayList<Integer> istumaPaikka = new ArrayList<>();
+			while(true){	
+				System.out.println("Nyt voit valita riivi: 1-12");
+				int riivi = scan.nextInt();
+				if (riivi < 0 || riivi > 12){ 
+					System.out.println("Tämä on väärin numero. Valitse uudelleen");
+				 	continue;
+				 }else{
+				 	System.out.println("Ja paikan: 1 - 32");  
+				 	int  paikka = scan.nextInt();
+				 	if (paikka < 0 || paikka > 33){ 
+				 		System.out.println("Tämä on väärin numero. Valitse uudelleen");
+				 		continue;
+				 		}else{
+				 			System.out.println("Sinun paikkasi on: "  + "riivi " + riivi + ", paikka " + paikka); 
+				 			istumaPaikka.add(riivi);
+				 		 	istumaPaikka.add(paikka);
+				 			break; 	
+				 		}
+				 }
+			}
+		
+			return istumaPaikka;
+	 }
+}
+
+
+
+

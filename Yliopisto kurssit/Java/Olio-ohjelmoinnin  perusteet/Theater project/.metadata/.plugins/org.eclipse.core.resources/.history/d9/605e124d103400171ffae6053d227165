@@ -1,0 +1,7 @@
+
+public class ValitusPoikkeus extends Exception {
+	 public ValitusPoikkeus (String message) {
+		  super(message);
+		 }
+}
+

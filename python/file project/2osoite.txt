@@ -1,0 +1,3 @@
+address = Neljäs linja 17-19 A17
+municipality = Helsinki
+post number = 00530

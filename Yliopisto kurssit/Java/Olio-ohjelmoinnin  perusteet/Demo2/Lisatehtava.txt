@@ -1,0 +1,13 @@
+Verkkokaupasta voi varastaa puhelimen (ainakin) seuraavilla tavoilla:
+- Luo uuden asiakas-olion, joka ostaa puhelimen. Puhelin annetaan kuitenkin varkaalle.
+	int puhelimenIndeksi = asiakas.etsiMieluinenPuhelin(kauppa.annaPuhelinkatalogi());
+	Puhelin p = kauppa.ostaPuhelin(puhelimenIndeksi, new Asiakas("", 200));
+	asiakas.asetaPuhelin(p);
+- Muuttaa Verkkokaupan julkista luokkamuuttujaa (hinta) ja suorittaa ostotapahtuman normaalisti. Jos hinta on negatiivinen, verkkokauppa maksaa asiakkaalle tuotteen ostamisesta.
+	Verkkokauppa.hinta = -40;
+- Antaa puhelinkatalogista viittauksen suoraan asiakkaalle.
+	int puhelimenIndeksi = asiakas.etsiMieluinenPuhelin(kauppa.annaPuhelinkatalogi());
+	Puhelin p = kauppa.annaPuhelinkatalogi().get(puhelimenIndeksi);
+	asiakas.asetaPuhelin(p);
+- Luo uuden puhelimen, ja asettaa sen asiakkaalle
+	asiakas.asetaPuhelin(new Puhelin("210"," Mokia"));	

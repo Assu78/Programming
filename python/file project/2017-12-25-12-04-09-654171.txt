@@ -1,0 +1,17 @@
+Name = Asad Ijaz
+Email = asad-ijaz1@hotmail.com
+Phone number = 0442317917
+Name = Asad Ijaz
+Email = asad-ijaz1@hotmail.com
+Phone number = 0442317917
+address = Neljäs linja 17-19 A17
+municipality = Helsinki
+post number = 00530
+
+that is all!!!
+
+address = Neljäs linja 17-19 A17
+municipality = Helsinki
+post number = 00530
+
+that is all!!!
